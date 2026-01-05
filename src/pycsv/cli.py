@@ -6,6 +6,7 @@ from typing import Annotated, Optional
 import typer
 
 from .config import load_config, CONFIG_PATH
+from .db import test_connection
 from .importer import import_csv, preview_schema
 
 app = typer.Typer(help="Import CSV files into PostgreSQL.")
@@ -65,6 +66,40 @@ def import_command(
         typer.echo(f"Columns: {', '.join(result.columns)}")
     except Exception as e:
         typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(1)
+
+
+@app.command("test")
+def test_command(
+    db: Annotated[
+        Optional[str],
+        typer.Option(
+            "--db",
+            "-d",
+            envvar="PYCSV_DATABASE_URL",
+            help="PostgreSQL connection string (or set PYCSV_DATABASE_URL)",
+        ),
+    ] = None,
+) -> None:
+    """Test the database connection."""
+    if not db:
+        config = load_config()
+        if config:
+            db = config.to_connection_string()
+        else:
+            typer.echo(
+                f"Error: Database connection required. Use --db, set PYCSV_DATABASE_URL, or create {CONFIG_PATH}",
+                err=True,
+            )
+            raise typer.Exit(1)
+
+    typer.echo("Testing connection...")
+    success, message = test_connection(db)
+
+    if success:
+        typer.echo(f"Connection successful: {message}")
+    else:
+        typer.echo(f"Connection failed: {message}", err=True)
         raise typer.Exit(1)
 
 

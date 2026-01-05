@@ -1,6 +1,6 @@
 """Database connection and table management using SQLAlchemy."""
 
-from sqlalchemy import create_engine, MetaData, Table, Column
+from sqlalchemy import create_engine, text, MetaData, Table, Column
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
@@ -8,6 +8,22 @@ from sqlalchemy.orm import Session
 def get_engine(connection_string: str) -> Engine:
     """Create a SQLAlchemy engine from a connection string."""
     return create_engine(connection_string)
+
+
+def test_connection(connection_string: str) -> tuple[bool, str]:
+    """Test database connection.
+
+    Returns:
+        Tuple of (success, message).
+    """
+    try:
+        engine = get_engine(connection_string)
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT version()"))
+            version = result.scalar()
+        return True, f"PostgreSQL {version}"
+    except Exception as e:
+        return False, str(e)
 
 
 def create_table_from_schema(
