@@ -24,7 +24,7 @@ pycsv import <csv_file> --dry-run
 ```
 src/pycsv/
 ├── cli.py          # Typer CLI entry point, handles args and dry-run
-├── config.py       # YAML config loading from ~/.pycsv/config.yaml
+├── config.py       # Config loading: env vars, .env file, ~/.pycsv/config.yaml
 ├── csv_parser.py   # Pandas-based CSV parsing with dtype→SQLAlchemy type mapping
 ├── db.py           # SQLAlchemy engine, dynamic table creation, bulk insert
 └── importer.py     # Orchestrates parsing and import, returns ImportResult
@@ -32,6 +32,6 @@ src/pycsv/
 
 **Data flow**: `cli.py` → `importer.py` → `csv_parser.py` + `db.py`
 
-**Config priority**: CLI flag > env var (`PYCSV_DATABASE_URL`) > config file (`~/.pycsv/config.yaml`)
+**Config priority**: CLI `--db` > `PYCSV_DATABASE_URL` env > `PYCSV_DB_*` env vars/.env > `~/.pycsv/config.yaml`
 
 The `ParsedCSV` dataclass carries inferred columns and row data between modules. Type inference maps pandas dtypes (int64, float64, object, datetime64, bool) to SQLAlchemy types (Integer, Float, String, DateTime, Boolean).

@@ -22,14 +22,37 @@ pycsv import data.csv --table users --db postgresql://user:pass@localhost/mydb
 pycsv import data.csv --dry-run
 ```
 
-### Using environment variable for database connection
+### Using environment variables
 
 ```bash
 export PYCSV_DATABASE_URL=postgresql://user:pass@localhost/mydb
 pycsv import data.csv --table users
 ```
 
-### Using a config file
+Or use individual env vars:
+
+```bash
+export PYCSV_DB_HOST=localhost
+export PYCSV_DB_PORT=5432
+export PYCSV_DB_USER=postgres
+export PYCSV_DB_PASSWORD=secret
+export PYCSV_DB_DATABASE=mydb
+pycsv import data.csv --table users
+```
+
+### Using a .env file
+
+Create `.env` in your working directory:
+
+```
+PYCSV_DB_HOST=localhost
+PYCSV_DB_PORT=5432
+PYCSV_DB_USER=postgres
+PYCSV_DB_PASSWORD=secret
+PYCSV_DB_DATABASE=mydb
+```
+
+### Using a YAML config file
 
 Create `~/.pycsv/config.yaml`:
 
@@ -51,8 +74,9 @@ pycsv import data.csv --table users
 ## Connection Priority
 
 1. `--db` command line flag
-2. `PYCSV_DATABASE_URL` environment variable
-3. `~/.pycsv/config.yaml` config file
+2. `PYCSV_DATABASE_URL` environment variable (full connection string)
+3. `PYCSV_DB_*` environment variables or `.env` file
+4. `~/.pycsv/config.yaml` config file
 
 ## Options
 
