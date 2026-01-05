@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pycsv"
+version = "0.1.0"
+description = "CLI tool to import CSV files into PostgreSQL"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "sqlalchemy>=2.0",
+    "psycopg2-binary>=2.9",
+    "typer>=0.9",
+    "pandas>=2.0",
+]
+
+[project.scripts]
+pycsv = "pycsv.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pycsv"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+]
