@@ -1,11 +1,11 @@
 """CLI entry point using Typer."""
 
-import os
 from pathlib import Path
 from typing import Annotated, Optional
 
 import typer
 
+from .config import load_config, CONFIG_PATH
 from .importer import import_csv, preview_schema
 
 app = typer.Typer(help="Import CSV files into PostgreSQL.")
@@ -48,11 +48,16 @@ def import_command(
         return
 
     if not db:
-        typer.echo(
-            "Error: Database connection string required. Use --db or set PYCSV_DATABASE_URL",
-            err=True,
-        )
-        raise typer.Exit(1)
+        # Try loading from config file
+        config = load_config()
+        if config:
+            db = config.to_connection_string()
+        else:
+            typer.echo(
+                f"Error: Database connection required. Use --db, set PYCSV_DATABASE_URL, or create {CONFIG_PATH}",
+                err=True,
+            )
+            raise typer.Exit(1)
 
     try:
         result = import_csv(csv_file, db, table)

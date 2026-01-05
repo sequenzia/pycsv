@@ -29,6 +29,31 @@ export PYCSV_DATABASE_URL=postgresql://user:pass@localhost/mydb
 pycsv import data.csv --table users
 ```
 
+### Using a config file
+
+Create `~/.pycsv/config.yaml`:
+
+```yaml
+database:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: secret
+  database: mydb
+```
+
+Then run without specifying connection:
+
+```bash
+pycsv import data.csv --table users
+```
+
+## Connection Priority
+
+1. `--db` command line flag
+2. `PYCSV_DATABASE_URL` environment variable
+3. `~/.pycsv/config.yaml` config file
+
 ## Options
 
 - `--table, -t`: Target table name (defaults to CSV filename)
